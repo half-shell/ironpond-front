@@ -1,9 +1,11 @@
 (ns ironpond-front.views
   (:require
    [re-frame.core :as re-frame]
+   [ironpond-front.events :as events]
    [ironpond-front.subs :as subs]))
 
 (def square-size 128)
+(def card-size 256)
 
 (defn display-piece [square]
   (let [color (get square :color)
@@ -37,12 +39,30 @@
          :text-align "center"}}
        (display-piece square)])))
 
+(defn display-card [player idx _]
+  (let [card (re-frame/subscribe [::subs/card [player idx]])]
+    [:div.card
+     ^{:key idx}
+     {:style {:height card-size :width card-size :text-align "center"}
+      :class (when (get @card :selected) "selected")
+      :on-click #(do
+                   (re-frame/dispatch [::events/unselect-card-hand player])
+                   (re-frame/dispatch [::events/set-card-selected player idx]))}
+     (str idx (get @card :selected))]))
+
+(defn display-hand [player hand]
+  (into
+   [:div {:style {:display "flex"}}]
+   (map-indexed #(display-card player %1 %2) hand)))
+
 (defn main-panel []
-  (let [name (re-frame/subscribe [::subs/name])
-        board (re-frame/subscribe [::subs/board])]
-    [:div
-     [:h1 @name]
+  (let [board (re-frame/subscribe [::subs/board])
+        black (re-frame/subscribe [::subs/white])
+        white (re-frame/subscribe [::subs/black])]
+    [:div {:style {:display "flex" :flex-direction "column"}}
+     (display-hand :white (get @white :hand))
      (into [:div {:style {:display "flex"
                           :max-width (* square-size 8)
                           :flex-wrap "wrap"}}]
-           (map #(display-square %) @board))]))
+           (map #(display-square %) @board))
+     (display-hand :black (get @black :hand))]))

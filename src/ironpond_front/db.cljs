@@ -27,7 +27,13 @@
                      (fn [idx]
                        (hash-map :idx idx)))))
 
+(defn init-hand [] (->>
+                    (vec (range 5))
+                    (map-indexed #(hash-map :idx % :selected false))
+                    (vec)))
 (def default-db
   {:name "ironpond"
    :board (init-board)
-   :deck (init-deck)})
+   :deck (init-deck)
+   :white {:hand (init-hand)}
+   :black {:hand (init-hand)}})

@@ -11,3 +11,18 @@
  ::board
  (fn [db]
    (:board db)))
+
+(re-frame/reg-sub
+ ::white
+ (fn [db]
+   (:white db)))
+
+(re-frame/reg-sub
+ ::black
+ (fn [db]
+   (:black db)))
+
+(re-frame/reg-sub
+ ::card
+ (fn [db [e [player card-idx]]]
+   (get-in db [player :hand card-idx])))
