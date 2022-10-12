@@ -2,16 +2,23 @@
 
 (defn init-board []
   (->>
-   (vec (range 63))
+   (vec (range 56))
    (map-indexed
     (fn [idx square]
       (let [color (cond
-                    (and (>= idx 9) (<= idx 17)) "white"
-                    (and (<= idx 53) (>= idx 45)) "black")
-            type (if
-                  (or
-                   (and (>= idx 9) (<= idx 17))
-                   (and (<= idx 53) (>= idx 45))) "pon")]
+                    (and (>= idx 0) (<= idx 17)) "white"
+                    (and (>= idx 39) (<= idx 55)) "black"
+                    :else nil)
+            type (cond
+                   (or
+                    (and (>= idx 8) (<= idx 15))
+                    (and (>= idx 40) (<= idx 47))) :pawn
+                   (or (= idx 0) (= idx 7) (= idx 48) (= idx 55)) :rook
+                   (or (= idx 1) (= idx 6) (= idx 49) (= idx 54)) :knight
+                   (or (= idx 2) (= idx 5) (= idx 50) (= idx 53)) :bishop
+                   (or (= idx 3) (= idx 51)) :queen
+                   (or (= idx 4) (= idx 52)) :king
+                   :else nil)]
         (hash-map :color color :type type :idx idx))))))
 
 (defn init-deck [] (->>

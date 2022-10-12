@@ -6,21 +6,35 @@
 (def square-size 128)
 
 (defn display-piece [square]
-  (let [color (get square :color)]
-    (when-not (nil? color)
-      (if (= color "white")
-        "\u2659"
-        "\u265f"))))
+  (let [color (get square :color)
+        type (get square :type)
+        offsets {:base 9812 :color 6
+                 :king 0 :queen 1 :rook 2 :bishop 3 :knight 4 :pawn 5}]
+    (when-not (nil? type)
+      (. js/String fromCodePoint
+         (+ (get offsets :base)
+            (get offsets type)
+            (when (= color "black") (get offsets :color)))))))
 
 (defn display-square [square]
   (let [idx (get square :idx)]
     (when-not (nil? square)
       [:div ^{:key (str idx)}
-       {:style {:background-color (if (= (mod idx 2) 0) "white" "orange")
-                :height square-size
-                :width square-size
-                :font-size 100
-                :text-align "center"}}
+       {:style
+        {:background-color
+         (if (even?
+              (+ idx
+                 (when (or
+                        (and (> idx 7) (< idx 16))
+                        (and (> idx 23) (< idx 32))
+                        (and (> idx 39) (< idx 48)))
+                   1)))
+           "orange"
+           "white")
+         :height square-size
+         :width square-size
+         :font-size 64
+         :text-align "center"}}
        (display-piece square)])))
 
 (defn main-panel []
@@ -29,6 +43,6 @@
     [:div
      [:h1 @name]
      (into [:div {:style {:display "flex"
-                          :max-width (* square-size 9)
+                          :max-width (* square-size 8)
                           :flex-wrap "wrap"}}]
            (map #(display-square %) @board))]))
