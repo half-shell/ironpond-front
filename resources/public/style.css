@@ -1,0 +1,5 @@
+.card.selected {
+  border-color: black;
+  border-width: 1;
+  border-style: solid;
+}
