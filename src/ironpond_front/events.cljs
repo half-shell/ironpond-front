@@ -22,7 +22,8 @@
  (fn-traced
   [db [e player]]
   (assoc-in db [player :hand]
-            ;; NOTE: Does not look nice either. What could be better?
+            ;; NOTE: Does not look nice either.
+            ;; How can we avoid relying on .indexOf?
             (reduce #(assoc-in %1 [(.indexOf %1 %2) :selected] false)
                     (get-in db [player :hand])
                     (get-in db [player :hand])))))
@@ -46,6 +47,6 @@
   (assoc-in db [:board]
             ;; NOTE: This is **very** inneficient and takes quite a bit of time (~75ms).
             ;; Find a way to make is faster
-            (reduce #(assoc-in %1 [(:idx %2) :playable]  false)
+            (reduce #(assoc-in %1 [(:id %2) :playable] false)
                     (:board db)
                     (:board db)))))

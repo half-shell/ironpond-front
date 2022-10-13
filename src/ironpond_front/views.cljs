@@ -8,18 +8,18 @@
 (def card-size 128)
 
 (defn display-piece [square]
-  (let [color (get square :color)
-        type (get square :type)
+  (let [player (get-in square [:piece :player])
+        type (get-in square [:piece :type])
         offsets {:base 9812 :color 6
                  :king 0 :queen 1 :rook 2 :bishop 3 :knight 4 :pawn 5}]
     (when-not (nil? type)
       (. js/String fromCodePoint
-         (+ (get offsets :base)
-            (get offsets type)
-            (when (= color "black") (get offsets :color)))))))
+         (+ (:base offsets)
+            (type offsets)
+            (when (= player "black") (:color offsets)))))))
 
 (defn display-square [square]
-  (let [idx (:idx square)
+  (let [idx (:id square)
         square-sub (re-frame/subscribe [::subs/square idx])]
     (when-not (nil? square)
       [:div ^{:key (str idx)}
@@ -30,16 +30,18 @@
                         (when (or
                                (and (> idx 7) (< idx 16))
                                (and (> idx 23) (< idx 32))
-                               (and (> idx 39) (< idx 48)))
+                               (and (> idx 39) (< idx 48))
+                               (and (> idx 55) (< idx 64)))
                           1)))
-                  "black"
-                  "white")
+                  "white"
+                  "black")
                 (when (:playable @square-sub) " playable"))
         :style {
                 :height square-size
                 :width square-size
                 :font-size square-size
-                :text-align "center"}}
+                :text-align "center"}
+        :on-click #(re-frame/dispatch [::subs/preview-move idx])}
        (display-piece square)])))
 
 (defn display-card [player idx card]
