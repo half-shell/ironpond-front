@@ -4,10 +4,6 @@
    [ironpond-front.db :as db]
    [day8.re-frame.tracing :refer-macros [fn-traced]]))
 
-(defn get-selected-card-idx [hand]
-  (first
-   (keep-indexed #(when (get %2 :selected) %1) hand)))
-
 (re-frame/reg-event-db
  ::initialize-db
  (fn-traced
@@ -25,10 +21,11 @@
  ::unselect-card-hand
  (fn-traced
   [db [e player]]
-  (let [card-idx (get-selected-card-idx (get-in db [player :hand] ))]
-    ;; We set the one matching the index as selected
-    (when-not (nil? card-idx)
-      (assoc-in db [player :hand card-idx :selected] false)))))
+  (assoc-in db [player :hand]
+            ;; NOTE: Does not look nice either. What could be better?
+            (reduce #(assoc-in %1 [(.indexOf %1 %2) :selected] false)
+                    (get-in db [player :hand])
+                    (get-in db [player :hand])))))
 
 (re-frame/reg-event-db
  ::reset-card-selection
