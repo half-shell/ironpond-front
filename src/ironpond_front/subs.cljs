@@ -26,3 +26,9 @@
  ::card
  (fn [db [e [player card-idx]]]
    (get-in db [player :hand card-idx])))
+
+(re-frame/reg-sub
+ ::square
+ (fn
+   [db [e idx]]
+   (get-in db [:board idx])))

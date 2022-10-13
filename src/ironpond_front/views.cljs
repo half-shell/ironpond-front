@@ -19,7 +19,8 @@
             (when (= color "black") (get offsets :color)))))))
 
 (defn display-square [square]
-  (let [idx (get square :idx)]
+  (let [idx (:idx square)
+        square-sub (re-frame/subscribe [::subs/square idx])]
     (when-not (nil? square)
       [:div ^{:key (str idx)}
        {:class (str
@@ -33,6 +34,7 @@
                           1)))
                   "black"
                   "white")
+                (when (:playable @square-sub) " playable"))
         :style {
                 :height square-size
                 :width square-size
@@ -40,16 +42,22 @@
                 :text-align "center"}}
        (display-piece square)])))
 
-(defn display-card [player idx _]
-  (let [card (re-frame/subscribe [::subs/card [player idx]])]
+(defn display-card [player idx card]
+  (let [card-index (:idx card)
+        card-sub (re-frame/subscribe [::subs/card [player idx]])]
     [:div.card
-     ^{:key idx}
+     ^{:key card-index}
      {:style {:height card-size :width card-size :text-align "center"}
-      :class (when (get @card :selected) "selected")
+      :class (when (:selected @card-sub) "selected")
       :on-click #(do
+                   (re-frame/dispatch [::events/reset-board])
                    (re-frame/dispatch [::events/unselect-card-hand player])
-                   (re-frame/dispatch [::events/set-card-selected player idx]))}
-     (str idx (get @card :selected))]))
+                   ;; TODO: This could do without specifying the player.
+                   ;; It really depends on weither or not we want to have a
+                   ;; consistent interface for those events.
+                   (re-frame/dispatch [::events/set-card-selected player idx])
+                   (re-frame/dispatch [::events/preview-card player idx]))}
+     (str card-index (:selected @card-sub))]))
 
 (defn display-hand [player hand]
   (into

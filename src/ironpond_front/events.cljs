@@ -28,8 +28,24 @@
                     (get-in db [player :hand])))))
 
 (re-frame/reg-event-db
- ::reset-card-selection
+ ::preview-card
  (fn-traced
-  [db [player]]
-  ;; We reset all selected cards
-  (reduce #(assoc-in % [:selected] false) (get-in db [player :hand]))))
+  [db [e player idx]]
+  (let [card (get-in db [player :hand idx])
+        preview (:preview card)
+        squares (when-not (nil? preview) (preview (:board db)))]
+    (when-not (empty? squares)
+      (let [square-idx (:idx (first squares))]
+        ;; TODO: use reduce to handle all squares
+        (assoc-in db [:board square-idx :playable] true))))))
+
+(re-frame/reg-event-db
+ ::reset-board
+ (fn-traced
+  [db]
+  (assoc-in db [:board]
+            ;; NOTE: This is **very** inneficient and takes quite a bit of time (~75ms).
+            ;; Find a way to make is faster
+            (reduce #(assoc-in %1 [(:idx %2) :playable]  false)
+                    (:board db)
+                    (:board db)))))

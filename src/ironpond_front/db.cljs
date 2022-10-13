@@ -29,9 +29,26 @@
                         (map-indexed #(hash-map :idx % :selected false))
                         (vec)))
 
+;; piece is a struct with :type and :color
+(defn find-pieces [piece board]
+  (let [color (get piece :color)
+        type (get piece :type)]
+    (filter #(and (= color (get % :color)) (= type (get % :type))) board)))
+
+;; THIS IS THE FIRST CARD
+(def ninja
+  {:idx 26
+   :name "ninja"
+   :selected false
+   :fx (fn [] nil)
+   ;; should be a re-frame construct to change the db
+   :preview (fn
+              [board]
+              (find-pieces {:type :bishop :color "black"} board))})
+
 (def default-db
   {:name "ironpond"
    :board (init-board)
    :deck (init-deck)
-   :white {:hand (init-hand)}
-   :black {:hand (init-hand)}})
+   :white {:hand (vec (conj (init-hand) ninja))}
+   :black {:hand (vec (conj (init-hand) ninja))}})

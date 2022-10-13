@@ -11,3 +11,7 @@
 .square.black {
   background-color: orange;
 }
+
+.square.playable {
+  background-color: red;
+}
