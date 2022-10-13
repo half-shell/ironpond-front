@@ -22,21 +22,22 @@
   (let [idx (get square :idx)]
     (when-not (nil? square)
       [:div ^{:key (str idx)}
-       {:style
-        {:background-color
-         (if (even?
-              (+ idx
-                 (when (or
-                        (and (> idx 7) (< idx 16))
-                        (and (> idx 23) (< idx 32))
-                        (and (> idx 39) (< idx 48)))
-                   1)))
-           "orange"
-           "white")
-         :height square-size
-         :width square-size
-         :font-size 64
-         :text-align "center"}}
+       {:class (str
+                "square "
+                (if (even?
+                     (+ idx
+                        (when (or
+                               (and (> idx 7) (< idx 16))
+                               (and (> idx 23) (< idx 32))
+                               (and (> idx 39) (< idx 48)))
+                          1)))
+                  "black"
+                  "white")
+        :style {
+                :height square-size
+                :width square-size
+                :font-size square-size
+                :text-align "center"}}
        (display-piece square)])))
 
 (defn display-card [player idx _]

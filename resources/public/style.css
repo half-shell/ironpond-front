@@ -3,3 +3,11 @@
   border-width: 1;
   border-style: solid;
 }
+
+.square.white {
+  background-color: white;
+}
+
+.square.black {
+  background-color: orange;
+}
