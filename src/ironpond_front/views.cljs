@@ -41,7 +41,9 @@
                 :width square-size
                 :font-size square-size
                 :text-align "center"}
-        :on-click #(re-frame/dispatch [::subs/preview-move idx])}
+        :on-click #(do
+                     (re-frame/dispatch [::events/reset-board])
+                     (re-frame/dispatch [::events/preview-move idx]))}
        (display-piece square)])))
 
 (defn display-card [player idx card]

@@ -50,3 +50,14 @@
             (reduce #(assoc-in %1 [(:id %2) :playable] false)
                     (:board db)
                     (:board db)))))
+
+(re-frame/reg-event-db
+ ::preview-move
+ (fn-traced
+  [db [e idx]]
+  (let [piece (get-in db [:board idx :piece])
+        moves (-> (filter #(apply (:move piece) [idx %]) (:board db)) (vec))]
+    (assoc-in db [:board]
+              (reduce #(assoc-in %1 [(:id %2) :playable] true)
+                      (:board db)
+                      moves)))))

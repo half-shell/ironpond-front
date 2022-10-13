@@ -3,12 +3,23 @@
 (defn build-piece
   [player piece]
   (case piece
-    :pawn (hash-map :player player :type piece :move (fn [] nil) :take (fn [] nil))
-    :rook (hash-map :player player :type piece :move (fn [] nil) :take (fn [] nil))
-    :knight (hash-map :player player :type piece :move (fn [] nil) :take (fn [] nil))
-    :bishop (hash-map :player player :type piece :move (fn [] nil) :take (fn [] nil))
-    :queen (hash-map :player player :type piece :move (fn [] nil) :take (fn [] nil))
-    :king (hash-map :player player :type piece :move (fn [] nil) :take (fn [] nil))
+    :pawn (hash-map
+           :player player
+           :type piece
+           :move (fn
+                   [current-id square]
+                   (let [id (:id square)]
+                     (or
+                      (= (mod (- current-id id) 9) 0)
+                      (= (mod (- current-id id) 7) 0)
+                      (= (mod (- id current-id) 9) 0)
+                      (= (mod (- id current-id) 7) 0))))
+           :take (fn [] nil))
+    :rook (hash-map :player player :type piece :move (fn [] ()) :take (fn [] nil))
+    :knight (hash-map :player player :type piece :move (fn [] ()) :take (fn [] nil))
+    :bishop (hash-map :player player :type piece :move (fn [] ()) :take (fn [] nil))
+    :queen (hash-map :player player :type piece :move (fn [] ()) :take (fn [] nil))
+    :king (hash-map :player player :type piece :move (fn [] ()) :take (fn [] nil))
     nil))
 
 (defn get-squares [board fn]
