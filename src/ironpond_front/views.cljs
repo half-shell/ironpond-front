@@ -4,8 +4,8 @@
    [ironpond-front.events :as events]
    [ironpond-front.subs :as subs]))
 
-(def square-size 128)
-(def card-size 256)
+(def square-size 64)
+(def card-size 128)
 
 (defn display-piece [square]
   (let [color (get square :color)
