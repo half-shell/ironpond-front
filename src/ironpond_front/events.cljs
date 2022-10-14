@@ -34,19 +34,19 @@
   [db [e player idx]]
   (let [card (get-in db [player :hand idx])
         preview (:preview card)
-        squares (when-not (nil? preview) (preview (:board db)))]
+        squares (when-not (nil? preview) (preview (:board db) player))]
     (when-not (empty? squares)
-      (let [square-idx (:idx (first squares))]
-        ;; TODO: use reduce to handle all squares
-        (assoc-in db [:board square-idx :playable] true))))))
+      (assoc-in db [:board]
+                (reduce #(assoc-in %1 [(:id %2) :playable] true)
+                        (:board db)
+                        squares))))))
 
 (re-frame/reg-event-db
  ::reset-board
  (fn-traced
   [db]
   (assoc-in db [:board]
-            ;; NOTE: This is **very** inneficient and takes quite a bit of time (~75ms).
-            ;; Find a way to make is faster
+            ;; NOTE: Not great. Can this be better?
             (reduce #(assoc-in %1 [(:id %2) :playable] false)
                     (:board db)
                     (:board db)))))
