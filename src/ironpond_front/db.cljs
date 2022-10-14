@@ -12,11 +12,11 @@
            :type piece
            :move moves/pawn-moves
            :take (fn [] nil))
-    :rook (hash-map :player player :type piece :move (fn [] ()) :take (fn [] nil))
-    :knight (hash-map :player player :type piece :move (fn [] ()) :take (fn [] nil))
-    :bishop (hash-map :player player :type piece :move (fn [] ()) :take (fn [] nil))
+    :rook (hash-map :player player :type piece :move moves/rook-moves :take (fn [] nil))
+    :knight (hash-map :player player :type piece :move moves/knight-moves :take (fn [] nil))
+    :bishop (hash-map :player player :type piece :move moves/bishop-moves :take (fn [] nil))
     :queen (hash-map :player player :type piece :move moves/queen-moves :take (fn [] nil))
-    :king (hash-map :player player :type piece :move (fn [] ()) :take (fn [] nil))
+    :king (hash-map :player player :type piece :move moves/king-moves :take (fn [] nil))
     nil))
 
 (defn get-squares [board fn]
