@@ -14,7 +14,6 @@
  ::set-card-selected
  (fn-traced
   [db [e player card-idx]]
-  ;; We set the one matching the index as selected
   (assoc-in db [player :hand card-idx :selected] true)))
 
 (re-frame/reg-event-db
@@ -22,7 +21,7 @@
  (fn-traced
   [db [e player]]
   (assoc-in db [player :hand]
-            ;; NOTE: Does not look nice either.
+            ;; FIXME: Does not look nice either.
             ;; How can we avoid relying on .indexOf?
             (reduce #(assoc-in %1 [(.indexOf %1 %2) :selected] false)
                     (get-in db [player :hand])
@@ -55,8 +54,8 @@
  ::preview-move
  (fn-traced
   [db [e idx]]
-  (let [piece (get-in db [:board idx :piece])
-        moves (-> (filter #(apply (:move piece) [idx %]) (:board db)) (vec))]
+  (let [square (get-in db [:board idx])
+        moves (filterv #(apply (get-in square [:piece :move]) [square %]) (:board db))]
     (assoc-in db [:board]
               (reduce #(assoc-in %1 [(:id %2) :playable] true)
                       (:board db)

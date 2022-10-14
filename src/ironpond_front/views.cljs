@@ -16,7 +16,7 @@
       (. js/String fromCodePoint
          (+ (:base offsets)
             (type offsets)
-            (when (= player "black") (:color offsets)))))))
+            (when (= player :black) (:color offsets)))))))
 
 (defn display-square [square]
   (let [idx (:id square)
