@@ -2,7 +2,8 @@
   (:require
    [re-frame.core :as re-frame]
    [ironpond-front.events :as events]
-   [ironpond-front.subs :as subs]))
+   [ironpond-front.subs :as subs]
+   [ironpond-front.cards :as cards]))
 
 (def square-size 64)
 (def card-size 128)
@@ -48,34 +49,40 @@
 
 (defn display-card [player idx card]
   (let [card-index (:idx card)
+        card-background-image (str "url(" (cards/get-image-url card) ")")
         card-sub (re-frame/subscribe [::subs/card [player idx]])]
     [:div.card
      ^{:key card-index}
-     {:style {:height card-size :width card-size :text-align "center"}
+     {
       :class (when (:selected @card-sub) "selected")
       :on-click #(do
                    (re-frame/dispatch [::events/reset-board])
+                   ;; TODO: Ideally, we'd want to reset all hands so we can
+                   ;; display only a single selected card
                    (re-frame/dispatch [::events/unselect-card-hand player])
-                   ;; TODO: This could do without specifying the player.
-                   ;; It really depends on weither or not we want to have a
-                   ;; consistent interface for those events.
                    (re-frame/dispatch [::events/set-card-selected player idx])
                    (re-frame/dispatch [::events/preview-card player idx]))}
-     (str card-index (:selected @card-sub))]))
+     [:div.img {:style {
+                        :height card-size
+                        :width card-size
+                        ;; TODO: This'll end up being dynamic depending on the card
+                        ;; :background-image: card-background-image
+                        }}]
+     [:div.title
+      {:style {:text-align "center"}}
+      (str card-index (:selected @card-sub))]]))
 
 (defn display-hand [player hand]
   (into
-   [:div {:style {:display "flex"}}]
+   [:div.hand {:style {:display "flex"}}]
    (map-indexed #(display-card player %1 %2) hand)))
 
 (defn main-panel []
   (let [board (re-frame/subscribe [::subs/board])
         black (re-frame/subscribe [::subs/white])
         white (re-frame/subscribe [::subs/black])]
-    [:div {:style {:display "flex" :flex-direction "column"}}
+    [:div.game
      (display-hand :white (get @white :hand))
-     (into [:div {:style {:display "flex"
-                          :max-width (* square-size 8)
-                          :flex-wrap "wrap"}}]
+     (into [:div.board {:style {:max-width (* square-size 8)}}]
            (map #(display-square %) @board))
      (display-hand :black (get @black :hand))]))
